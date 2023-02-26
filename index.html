@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>YouTube Video Transcriber</title>
+  </head>
+  <body>
+    <h1>YouTube Video Transcriber</h1>
+    <form id="video-form">
+      <label for="video-url">Enter the URL of the YouTube video:</label>
+      <input type="text" id="video-url" name="video-url">
+      <br>
+      <button type="submit" id="transcribe-button">Transcribe</button>
+    </form>
+    <br>
+    <div id="transcription"></div>
+
+    <script>
+      const form = document.getElementById("video-form");
+      const button = document.getElementById("transcribe-button");
+      const transcriptionDiv = document.getElementById("transcription");
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        const videoUrl = document.getElementById("video-url").value;
+
+        button.disabled = true;
+        transcriptionDiv.innerText = "Transcribing...";
+
+        fetch('/transcribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({video_url: videoUrl})
+        })
+          .then(response => response.text())
+          .then(text => {
+            transcriptionDiv.innerText = text;
+            button.disabled = false;
+          })
+          .catch(error => {
+            transcriptionDiv.innerText = "An error occurred. Please try again later.";
+            button.disabled = false;
+          });
+      });
+    </script>
+  </body>
+</html>
